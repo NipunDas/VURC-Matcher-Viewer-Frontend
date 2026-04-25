@@ -34,7 +34,7 @@ export const BoxcastPlayer: React.FunctionComponent = () => {
     }
 
     document.body.appendChild(script)
-  }, [])
+  }, [channelId, broadcastId, startTime])
 
   if (!channelId || !broadcastId) {
     return <div>Missing channel or broadcast ID!</div>

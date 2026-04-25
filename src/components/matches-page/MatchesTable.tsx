@@ -131,8 +131,6 @@ export const MatchesTable: React.FunctionComponent = () => {
               pathname: '/broadcast',
               search: searchParams,
             }}
-            target='_blank'
-            rel='noopener noreferrer'
             underline='hover'
             sx={{
               fontWeight: 600,
