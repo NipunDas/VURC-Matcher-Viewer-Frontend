@@ -10,6 +10,8 @@ import {
   TextField,
   Typography,
   Link as MuiLink,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
 import {
@@ -59,6 +61,9 @@ export const MatchesTable: React.FunctionComponent = () => {
   const [teamQuery, setTeamQuery] = useState('')
   const [division, setDivision] = useState<Division>('Math')
 
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
+
   useEffect(() => {
     fetch(MATCHES_JSON_FILE)
       .then((res) => res.json())
@@ -86,73 +91,93 @@ export const MatchesTable: React.FunctionComponent = () => {
     })
   }, [matches, teamQuery, division])
 
-  const columnDefinitions: GridColDef[] = [
-    { field: 'match_id', headerName: 'Match', minWidth: 120, width: 130 },
-    { field: 'division_name', headerName: 'Division', minWidth: 130, width: 140 },
-    { field: 'red_team', headerName: 'Red Team', flex: 1, minWidth: 150 },
-    {
-      field: 'red_score',
-      headerName: 'Red Score',
-      width: 110,
-      align: 'center',
-      headerAlign: 'center',
-      type: 'number',
-    },
-    { field: 'blue_team', headerName: 'Blue Team', flex: 1, minWidth: 150 },
-    {
-      field: 'blue_score',
-      headerName: 'Blue Score',
-      width: 110,
-      align: 'center',
-      headerAlign: 'center',
-      type: 'number',
-    },
-    {
-      field: 'link',
-      headerName: '',
-      width: 110,
-      align: 'center',
-      headerAlign: 'center',
-      sortable: false,
-      filterable: false,
-      renderCell: (params: GridRenderCellParams) => {
-        const { channelId, broadcastId, t } = params.row
-
-        const searchParams = createSearchParams({
-          channelId,
-          broadcastId,
-          t: String(t),
-        }).toString()
-
-        return (
-          <MuiLink
-            component={RouterLink}
-            to={{
-              pathname: '/broadcast',
-              search: searchParams,
-            }}
-            underline='hover'
-            sx={{
-              fontWeight: 600,
-              color: 'primary.light',
-              '&:visited': {
-                color: 'primary.light',
-              },
-            }}
-          >
-            Watch
-          </MuiLink>
-        )
+  const columnDefinitions: GridColDef[] = useMemo(
+    () => [
+      {
+        field: 'match_id',
+        headerName: 'Match',
+        width: isMobile ? 92 : 130,
+        minWidth: isMobile ? 92 : 120,
       },
-    },
-  ]
+      {
+        field: 'red_team',
+        headerName: isMobile ? 'Red' : 'Red Team',
+        flex: 1,
+        minWidth: isMobile ? 105 : 150,
+      },
+      {
+        field: 'red_score',
+        headerName: isMobile ? 'R' : 'Red Score',
+        width: isMobile ? 56 : 110,
+        minWidth: isMobile ? 56 : 110,
+        align: 'center',
+        headerAlign: 'center',
+        type: 'number',
+      },
+      {
+        field: 'blue_team',
+        headerName: isMobile ? 'Blue' : 'Blue Team',
+        flex: 1,
+        minWidth: isMobile ? 105 : 150,
+      },
+      {
+        field: 'blue_score',
+        headerName: isMobile ? 'B' : 'Blue Score',
+        width: isMobile ? 56 : 110,
+        minWidth: isMobile ? 56 : 110,
+        align: 'center',
+        headerAlign: 'center',
+        type: 'number',
+      },
+      {
+        field: 'link',
+        headerName: '',
+        width: isMobile ? 78 : 110,
+        minWidth: isMobile ? 78 : 110,
+        align: 'center',
+        headerAlign: 'center',
+        sortable: false,
+        filterable: false,
+        renderCell: (params: GridRenderCellParams) => {
+          const { channelId, broadcastId, t } = params.row
+
+          const searchParams = createSearchParams({
+            channelId,
+            broadcastId,
+            t: String(t),
+          }).toString()
+
+          return (
+            <MuiLink
+              component={RouterLink}
+              to={{
+                pathname: '/broadcast',
+                search: searchParams,
+              }}
+              underline='hover'
+              sx={{
+                fontWeight: 600,
+                fontSize: isMobile ? '0.8rem' : '0.95rem',
+                color: 'primary.light',
+                '&:visited': {
+                  color: 'primary.light',
+                },
+              }}
+            >
+              Watch
+            </MuiLink>
+          )
+        },
+      },
+    ],
+    [isMobile]
+  )
 
   const rows: GridRowsProp = useMemo(
     () =>
       filteredMatches.map((match) => ({
         id: `${match.division_name}.${match.match_id}`,
         match_id: convertMatchIdToName(match.match_id),
-        division_name: match.division_name,
         red_team: match.red_team,
         red_score: match.red_score,
         blue_team: match.blue_team,
@@ -169,18 +194,17 @@ export const MatchesTable: React.FunctionComponent = () => {
       <Box
         sx={{
           mb: 2,
-          p: 2,
+          p: { xs: 1.5, sm: 2 },
           border: '1px solid',
           borderColor: 'divider',
           borderRadius: 3,
           backgroundColor: 'background.paper',
           boxShadow: 1,
-          // Helps avoid odd dark-mode paper overlay behavior when heavily restyling surfaces
           backgroundImage: 'none',
         }}
       >
         <Typography variant='h6' sx={{ mb: 1.5 }}>
-          Match Results
+          Match Results — {division}
         </Typography>
 
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
@@ -190,7 +214,8 @@ export const MatchesTable: React.FunctionComponent = () => {
             size='small'
             value={teamQuery}
             onChange={(e) => setTeamQuery(e.target.value)}
-            sx={{ minWidth: 240 }}
+            fullWidth={isMobile}
+            sx={{ minWidth: { xs: 0, sm: 240 } }}
             slotProps={{
               input: {
                 startAdornment: (
@@ -202,7 +227,11 @@ export const MatchesTable: React.FunctionComponent = () => {
             }}
           />
 
-          <FormControl size='small' sx={{ minWidth: 200 }}>
+          <FormControl
+            size='small'
+            fullWidth={isMobile}
+            sx={{ minWidth: { xs: 0, sm: 200 } }}
+          >
             <InputLabel id='division-label'>Division</InputLabel>
             <Select
               labelId='division-label'
@@ -229,7 +258,7 @@ export const MatchesTable: React.FunctionComponent = () => {
           backgroundColor: 'background.paper',
           boxShadow: 1,
           backgroundImage: 'none',
-          overflow: 'hidden',
+          overflowX: 'auto',
         }}
       >
         <DataGrid
@@ -244,6 +273,7 @@ export const MatchesTable: React.FunctionComponent = () => {
             border: 0,
             backgroundColor: 'background.default',
             color: 'text.primary',
+            minWidth: isMobile ? 500 : 0,
 
             '& .MuiDataGrid-columnHeaders': {
               backgroundColor: 'background.default',
@@ -253,6 +283,7 @@ export const MatchesTable: React.FunctionComponent = () => {
 
             '& .MuiDataGrid-columnHeaderTitle': {
               fontWeight: 700,
+              fontSize: isMobile ? '0.75rem' : '0.95rem',
             },
 
             '& .MuiDataGrid-cell': {
@@ -260,6 +291,12 @@ export const MatchesTable: React.FunctionComponent = () => {
               borderColor: 'divider',
               display: 'flex',
               alignItems: 'center',
+              fontSize: isMobile ? '0.8rem' : '0.95rem',
+              py: isMobile ? 0.5 : 1,
+            },
+
+            '& .MuiDataGrid-row': {
+              maxHeight: isMobile ? 44 : 'none',
             },
 
             '& .MuiDataGrid-row.odd': {
