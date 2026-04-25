@@ -24,7 +24,6 @@ export const BoxcastPlayer: React.FunctionComponent = () => {
       const boxcast = (window as any).boxcast
 
       boxcast(`#${PLAYER_ID}`).loadChannel(channelId, {
-        autoplay: true,
         selectedBroadcastId: broadcastId,
         onLoadPlayer: (player: any) => {
           if (startTime > 0 && typeof player.seek === 'function') {
