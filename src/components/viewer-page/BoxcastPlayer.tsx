@@ -4,6 +4,16 @@ import { useSearchParams } from 'react-router-dom'
 const BOXCAST_SCRIPT_SRC = 'https://js.boxcast.com/v3.min.js'
 const PLAYER_ID = 'player'
 
+const attemptSeekWithRetries = (player: any, seekTime: number, numRetries: number = 10) => {
+  console.log(`${numRetries} retries left, attempting to seek to timestamp ${seekTime}`)
+  if (typeof player.seek === 'function') {
+    player.seek(seekTime)
+    console.log('Successful seek')
+  } else if (numRetries > 0) {
+    attemptSeekWithRetries(player, seekTime, numRetries - 1)
+  }
+}
+
 export const BoxcastPlayer: React.FunctionComponent = () => {
   const playerDivRef = useRef<HTMLDivElement | null>(null)
   const [searchParams] = useSearchParams()
@@ -28,9 +38,9 @@ export const BoxcastPlayer: React.FunctionComponent = () => {
       boxcast(`#${PLAYER_ID}`).loadChannel(channelId, {
         selectedBroadcastId: broadcastId,
         onLoadPlayer: (player: any) => {
-          if (startTime > 0 && typeof player.seek === 'function') {
-            player.seek(startTime)
-            console.log('seeking')
+          
+          if (startTime > 0) {
+            attemptSeekWithRetries(player, startTime)
           }
         }
       })
