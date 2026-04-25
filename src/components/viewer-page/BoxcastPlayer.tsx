@@ -19,15 +19,18 @@ export const BoxcastPlayer: React.FunctionComponent = () => {
     script.async = true
 
     script.onload = () => {
+      console.log(!!playerDivRef.current)
       if (!playerDivRef.current) return
 
       const boxcast = (window as any).boxcast
+      console.log(boxcast)
 
       boxcast(`#${PLAYER_ID}`).loadChannel(channelId, {
         selectedBroadcastId: broadcastId,
         onLoadPlayer: (player: any) => {
           if (startTime > 0 && typeof player.seek === 'function') {
             player.seek(startTime)
+            console.log('seeking')
           }
         }
       })
