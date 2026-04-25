@@ -5,11 +5,9 @@ const BOXCAST_SCRIPT_SRC = 'https://js.boxcast.com/v3.min.js'
 const PLAYER_ID = 'player'
 
 const attemptSeekWithRetries = (player: any, seekTime: number, numRetries: number = 10) => {
-  console.log(`${numRetries} retries left, attempting to seek to timestamp ${seekTime}`)
   if (typeof player.seek === 'function') {
     try {
       player.seek(seekTime)
-      console.log('Successful seek')
       return
     } catch (error) {
       console.log(error)
@@ -37,12 +35,9 @@ export const BoxcastPlayer: React.FunctionComponent = () => {
     script.async = true
 
     script.onload = () => {
-      console.log(!!playerDivRef.current)
       if (!playerDivRef.current) return
 
       const boxcast = (window as any).boxcast
-      console.log(boxcast)
-
       boxcast(`#${PLAYER_ID}`).loadChannel(channelId, {
         selectedBroadcastId: broadcastId,
         onLoadPlayer: (player: any) => {
