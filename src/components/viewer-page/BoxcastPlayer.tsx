@@ -10,7 +10,8 @@ const attemptSeekWithRetries = (player: any, seekTime: number, numRetries: numbe
     player.seek(seekTime)
     console.log('Successful seek')
   } else if (numRetries > 0) {
-    attemptSeekWithRetries(player, seekTime, numRetries - 1)
+    // Retry in half-second intervals
+    setTimeout(() => attemptSeekWithRetries(player, seekTime, numRetries - 1), 500)
   }
 }
 
