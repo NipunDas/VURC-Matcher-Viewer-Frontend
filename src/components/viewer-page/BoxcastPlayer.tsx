@@ -7,9 +7,16 @@ const PLAYER_ID = 'player'
 const attemptSeekWithRetries = (player: any, seekTime: number, numRetries: number = 10) => {
   console.log(`${numRetries} retries left, attempting to seek to timestamp ${seekTime}`)
   if (typeof player.seek === 'function') {
-    player.seek(seekTime)
-    console.log('Successful seek')
-  } else if (numRetries > 0) {
+    try {
+      player.seek(seekTime)
+      console.log('Successful seek')
+      return
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  
+  if (numRetries > 0) {
     // Retry in half-second intervals
     setTimeout(() => attemptSeekWithRetries(player, seekTime, numRetries - 1), 500)
   }
