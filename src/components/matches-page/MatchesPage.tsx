@@ -13,18 +13,28 @@ export const MatchesPage: React.FunctionComponent = () => (
     <Box
       sx={{
         display: 'flex',
-        justifyContent: 'center',
+        alignItems: 'center',
+        justifyContent: 'space-between',
         mb: 3,
       }}
     >
       <Box
         component='img'
         src='/vex_logo.svg'
-        alt='Vex Logo'
+        alt='VEX Logo'
         sx={{
-          maxWidth: 240,
-          width: '100%',
-          height: 'auto',
+          height: { xs: 40, sm: 60 },
+          width: 'auto',
+        }}
+      />
+
+      <Box
+        component='img'
+        src='/cpslo.png'
+        alt='CPSLO Logo'
+        sx={{
+          height: { xs: 40, sm: 60 },
+          width: 'auto',
         }}
       />
     </Box>

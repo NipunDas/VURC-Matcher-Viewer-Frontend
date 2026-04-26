@@ -57,15 +57,33 @@ export const ViewerPage: React.FunctionComponent = () => {
         }}
       >
         <Box
-          component='img'
-          src='/vex_logo.svg'
-          alt='VEX logo'
           sx={{
             width: '100%',
-            maxWidth: 220,
-            height: 'auto',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
           }}
-        />
+        >
+          <Box
+            component='img'
+            src='/vex_logo.svg'
+            alt='VEX logo'
+            sx={{
+              height: { xs: 40, sm: 60 },
+              width: 'auto',
+            }}
+          />
+
+          <Box
+            component='img'
+            src='/cpslo.png'
+            alt='CPSLO logo'
+            sx={{
+              height: { xs: 40, sm: 60 },
+              width: 'auto',
+            }}
+          />
+        </Box>
 
         <Typography
           variant='h4'
@@ -78,11 +96,7 @@ export const ViewerPage: React.FunctionComponent = () => {
           {headerText}
         </Typography>
 
-        <Box
-          sx={{
-            width: '100%',
-          }}
-        >
+        <Box sx={{ width: '100%' }}>
           <Box
             sx={{
               position: 'relative',

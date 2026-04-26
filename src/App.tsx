@@ -7,6 +7,7 @@ export const App: React.FunctionComponent = () => {
   return (
     <Routes>
       <Route path='/' element={<MatchesPage />}/>
+      <Route path='/division/:divisionName' element={<MatchesPage />}/>
       <Route path='/broadcast' element={<ViewerPage />} />
     </Routes>
   )

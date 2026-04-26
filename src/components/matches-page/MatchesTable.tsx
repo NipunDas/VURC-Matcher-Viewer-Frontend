@@ -21,7 +21,7 @@ import {
   GridRowsProp,
 } from '@mui/x-data-grid'
 import React, { useEffect, useMemo, useState } from 'react'
-import { Link as RouterLink, createSearchParams } from 'react-router-dom'
+import { Link as RouterLink, createSearchParams, useNavigate, useParams } from 'react-router-dom'
 
 export type Match = {
   match_id: string
@@ -37,8 +37,8 @@ export type Match = {
 
 export type Division = 'Research' | 'Design' | 'Opportunity'
 
-const MATCHES_JSON_FILE = '/RE-VURC-24-8911.json'
-const DIVISIONS: Division[] = ['Research', 'Design', 'Opportunity']
+const MATCHES_JSON_FILE = '/matches.json'
+const DIVISIONS: (Division | 'All')[] = ['All', 'Research', 'Design', 'Opportunity']
 
 const convertMatchIdToName = (matchId: string): string => {
   if (matchId.startsWith('PRACTICE')) {
@@ -61,7 +61,11 @@ const convertMatchIdToName = (matchId: string): string => {
 export const MatchesTable: React.FunctionComponent = () => {
   const [matches, setMatches] = useState<Match[]>([])
   const [teamQuery, setTeamQuery] = useState('')
-  const [division, setDivision] = useState<Division>('Research')
+  const { divisionName } = useParams()
+  const navigate = useNavigate()
+
+  const division: Division | 'All' =
+    divisionName && DIVISIONS.includes(divisionName as Division) ? (divisionName as Division) : 'All'
 
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
@@ -75,15 +79,19 @@ export const MatchesTable: React.FunctionComponent = () => {
       })
   }, [])
 
-  const handleDivisionChange = (e: SelectChangeEvent<Division>) => {
-    setDivision(e.target.value as Division)
+  const handleDivisionChange = (e: SelectChangeEvent<Division | 'All'>) => {
+    if (e.target.value === 'All') {
+      navigate('/')
+    } else {
+      navigate(`/division/${e.target.value}`)
+    }
   }
 
   const filteredMatches = useMemo(() => {
     const processedTeamQuery = teamQuery.trim().toUpperCase()
 
     return matches.filter((match) => {
-      const matchesDivision = match.division_name === division
+      const matchesDivision = division === 'All' || match.division_name === division
       const matchesTeam =
         processedTeamQuery === '' ||
         match.red_team.toUpperCase().startsWith(processedTeamQuery) ||
@@ -94,87 +102,103 @@ export const MatchesTable: React.FunctionComponent = () => {
   }, [matches, teamQuery, division])
 
   const columnDefinitions: GridColDef[] = useMemo(
-    () => [
-      {
-        field: 'match_id',
-        headerName: 'Match',
-        width: isMobile ? 92 : 130,
-        minWidth: isMobile ? 92 : 120,
-      },
-      {
-        field: 'red_team',
-        headerName: isMobile ? 'Red' : 'Red Team',
-        flex: 1,
-        minWidth: isMobile ? 105 : 150,
-      },
-      {
-        field: 'red_score',
-        headerName: isMobile ? 'R' : 'Red Score',
-        width: isMobile ? 56 : 110,
-        minWidth: isMobile ? 56 : 110,
-        align: 'center',
-        headerAlign: 'center',
-        type: 'number',
-      },
-      {
-        field: 'blue_team',
-        headerName: isMobile ? 'Blue' : 'Blue Team',
-        flex: 1,
-        minWidth: isMobile ? 105 : 150,
-      },
-      {
-        field: 'blue_score',
-        headerName: isMobile ? 'B' : 'Blue Score',
-        width: isMobile ? 56 : 110,
-        minWidth: isMobile ? 56 : 110,
-        align: 'center',
-        headerAlign: 'center',
-        type: 'number',
-      },
-      {
-        field: 'link',
-        headerName: '',
-        width: isMobile ? 78 : 110,
-        minWidth: isMobile ? 78 : 110,
-        align: 'center',
-        headerAlign: 'center',
-        sortable: false,
-        filterable: false,
-        renderCell: (params: GridRenderCellParams) => {
-          const { channelId, broadcastId, t } = params.row
-
-          const searchParams = createSearchParams({
-            channelId,
-            broadcastId,
-            t: String(t),
-          }).toString()
-
-          return (
-            <MuiLink
-              component={RouterLink}
-              to={{
-                pathname: '/broadcast',
-                search: searchParams,
-              }}
-              target="_blank"
-              rel="noopener noreferrer"
-              underline='hover'
-              sx={{
-                fontWeight: 600,
-                fontSize: isMobile ? '0.8rem' : '0.95rem',
-                color: 'primary.light',
-                '&:visited': {
-                  color: 'primary.light',
-                },
-              }}
-            >
-              Watch
-            </MuiLink>
-          )
+    () => {
+      let columnDefinitions: GridColDef[] = [
+        {
+          field: 'match_id',
+          headerName: 'Match',
+          width: isMobile ? 92 : 130,
+          minWidth: isMobile ? 92 : 120,
         },
-      },
-    ],
-    [isMobile]
+        {
+          field: 'red_team',
+          headerName: isMobile ? 'Red' : 'Red Team',
+          flex: 1,
+          minWidth: isMobile ? 105 : 150,
+        },
+        {
+          field: 'red_score',
+          headerName: isMobile ? 'R' : 'Red Score',
+          width: isMobile ? 56 : 110,
+          minWidth: isMobile ? 56 : 110,
+          align: 'center',
+          headerAlign: 'center',
+          type: 'number',
+        },
+        {
+          field: 'blue_team',
+          headerName: isMobile ? 'Blue' : 'Blue Team',
+          flex: 1,
+          minWidth: isMobile ? 105 : 150,
+        },
+        {
+          field: 'blue_score',
+          headerName: isMobile ? 'B' : 'Blue Score',
+          width: isMobile ? 56 : 110,
+          minWidth: isMobile ? 56 : 110,
+          align: 'center',
+          headerAlign: 'center',
+          type: 'number',
+        },
+        {
+          field: 'link',
+          headerName: '',
+          width: isMobile ? 78 : 110,
+          minWidth: isMobile ? 78 : 110,
+          align: 'center',
+          headerAlign: 'center',
+          sortable: false,
+          filterable: false,
+          renderCell: (params: GridRenderCellParams) => {
+            const { channelId, broadcastId, t } = params.row
+
+            const searchParams = createSearchParams({
+              channelId,
+              broadcastId,
+              t: String(t),
+            }).toString()
+
+            return (
+              <MuiLink
+                component={RouterLink}
+                to={{
+                  pathname: '/broadcast',
+                  search: searchParams,
+                }}
+                target="_blank"
+                rel="noopener noreferrer"
+                underline='hover'
+                sx={{
+                  fontWeight: 600,
+                  fontSize: isMobile ? '0.8rem' : '0.95rem',
+                  color: 'primary.light',
+                  '&:visited': {
+                    color: 'primary.light',
+                  },
+                }}
+              >
+                Watch
+              </MuiLink>
+            )
+          },
+        },
+      ]
+
+      if (division === 'All') {
+        columnDefinitions = [
+          {
+            field: 'division_name',
+            headerName: isMobile ? 'Div' : 'Division',
+            width: isMobile ? 80 : 120,
+            minWidth: isMobile ? 80 : 120,
+          },
+          ...columnDefinitions,
+        ]
+      }
+
+      return columnDefinitions
+    },
+    [isMobile, division]
   )
 
   const rows: GridRowsProp = useMemo(
@@ -182,6 +206,7 @@ export const MatchesTable: React.FunctionComponent = () => {
       filteredMatches.map((match) => ({
         id: `${match.division_name}.${match.match_id}`,
         match_id: convertMatchIdToName(match.match_id),
+        division_name: match.division_name,
         red_team: match.red_team,
         red_score: match.red_score,
         blue_team: match.blue_team,
