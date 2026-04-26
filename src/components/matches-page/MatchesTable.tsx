@@ -1,12 +1,14 @@
 import {
   Box,
   FormControl,
+  FormControlLabel,
   InputAdornment,
   InputLabel,
   MenuItem,
   Select,
   SelectChangeEvent,
   Stack,
+  Switch,
   TextField,
   Typography,
   Link as MuiLink,
@@ -60,7 +62,8 @@ const convertMatchIdToName = (matchId: string): string => {
 
 export const MatchesTable: React.FunctionComponent = () => {
   const [matches, setMatches] = useState<Match[]>([])
-  const [teamQuery, setTeamQuery] = useState('')
+  const [teamQuery, setTeamQuery] = useState<string>('')
+  const [exactMatch, setExactMatch] = useState<boolean>(false)
   const { divisionName } = useParams()
   const navigate = useNavigate()
 
@@ -94,12 +97,16 @@ export const MatchesTable: React.FunctionComponent = () => {
       const matchesDivision = division === 'All' || match.division_name === division
       const matchesTeam =
         processedTeamQuery === '' ||
-        match.red_team.toUpperCase().startsWith(processedTeamQuery) ||
-        match.blue_team.toUpperCase().startsWith(processedTeamQuery)
+        (exactMatch
+          ? match.red_team.toUpperCase() === processedTeamQuery ||
+            match.blue_team.toUpperCase() === processedTeamQuery
+          : match.red_team.toUpperCase().startsWith(processedTeamQuery) ||
+            match.blue_team.toUpperCase().startsWith(processedTeamQuery)
+        )
 
       return matchesDivision && matchesTeam
     })
-  }, [matches, teamQuery, division])
+  }, [matches, teamQuery, division, exactMatch])
 
   const columnDefinitions: GridColDef[] = useMemo(
     () => {
@@ -275,6 +282,19 @@ export const MatchesTable: React.FunctionComponent = () => {
               ))}
             </Select>
           </FormControl>
+
+          <FormControlLabel
+            control={
+              <Switch
+                checked={exactMatch}
+                onChange={(e) => setExactMatch(e.target.checked)}
+              />
+            }
+            label='Exact Match'
+            sx={{
+              alignSelf: { xs: 'flex-start', sm: 'center' },
+            }}
+          />
         </Stack>
       </Box>
 
