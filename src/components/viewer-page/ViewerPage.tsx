@@ -9,29 +9,17 @@ export type BroadcastInfo = {
 }
 
 const BROADCAST_INFORMATION: Record<string, BroadcastInfo> = {
-  fi5auivq6h7l6nxazhsu: {
-    division: 'Math',
+  sw2mewknkrowugketxyt: {
+    division: 'Research',
     day: 1,
   },
-  cbj373thpcftjrm5h3i2: {
-    division: 'Math',
-    day: 2,
-  },
-  ut5mdvnqhcacoxk5kl31: {
-    division: 'Math',
-    day: 3,
-  },
-  ckddixroqg1uhb6rpvsd: {
-    division: 'Technology',
+  zhfds2dg0kjvu34lr9lp: {
+    division: 'Design',
     day: 1,
   },
-  rvwjpnlfvhr5qlv0wjjk: {
-    division: 'Technology',
-    day: 2,
-  },
-  wu1onfpso9uzyeq4vusp: {
-    division: 'Technology',
-    day: 3,
+  mtigshjyhxb963trskgz: {
+    division: 'Opportunity',
+    day: 1,
   },
 }
 

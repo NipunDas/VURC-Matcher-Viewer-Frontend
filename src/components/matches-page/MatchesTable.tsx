@@ -35,13 +35,15 @@ export type Match = {
   broadcast_id: string
 }
 
-export type Division = 'Math' | 'Technology'
+export type Division = 'Research' | 'Design' | 'Opportunity'
 
 const MATCHES_JSON_FILE = '/RE-VURC-24-8911.json'
-const DIVISIONS: Division[] = ['Math', 'Technology']
+const DIVISIONS: Division[] = ['Research', 'Design', 'Opportunity']
 
 const convertMatchIdToName = (matchId: string): string => {
-  if (matchId.startsWith('QUAL')) {
+  if (matchId.startsWith('PRACTICE')) {
+    return `PRACTICE ${matchId.slice(8)}`
+  } else if (matchId.startsWith('QUAL')) {
     return `QUAL ${matchId.slice(4)}`
   } else if (matchId.startsWith('R16')) {
     return `R16 #${matchId.slice(3)}`
@@ -59,7 +61,7 @@ const convertMatchIdToName = (matchId: string): string => {
 export const MatchesTable: React.FunctionComponent = () => {
   const [matches, setMatches] = useState<Match[]>([])
   const [teamQuery, setTeamQuery] = useState('')
-  const [division, setDivision] = useState<Division>('Math')
+  const [division, setDivision] = useState<Division>('Research')
 
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
