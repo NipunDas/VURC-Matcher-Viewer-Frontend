@@ -40,10 +40,38 @@ export const BoxcastPlayer: React.FunctionComponent = () => {
       const boxcast = (window as any).boxcast
       boxcast(`#${PLAYER_ID}`).loadChannel(channelId, {
         selectedBroadcastId: broadcastId,
-        onLoadPlayer: (player: any) => {
-          
+        onLoadPlayer: async (player: any) => {
+          console.log('player loaded', player)
+
+          // 1) Force actual playback first.
+          if (typeof player.play === 'function') {
+            try {
+              await player.play()
+              console.log('play() resolved')
+            } catch (e) {
+              console.log('play() failed', e)
+            }
+          }
+
+          // 2) Wait a bit longer than your current retry cadence.
+          await new Promise(r => setTimeout(r, 3000))
+
+          // 3) Try a very small rewind first, not a large absolute jump.
+          try {
+            player.seek(10)
+            console.log('seek(10) called')
+          } catch (e) {
+            console.log('seek failed', e)
+          }
+
+          // 4) Then try your intended time.
           if (startTime > 0) {
-            attemptSeekWithRetries(player, startTime)
+            try {
+              player.seek(startTime)
+              console.log('seek(startTime) called')
+            } catch (e) {
+              console.log('seek(startTime) failed', e)
+            }
           }
         }
       })
