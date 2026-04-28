@@ -37,10 +37,10 @@ export type Match = {
   broadcast_id: string
 }
 
-export type Division = 'Research' | 'Design' | 'Opportunity'
+export type Division = 'Research' | 'Design' | 'Opportunity' | 'VEX U'
 
 const MATCHES_JSON_FILE = '/matches.json'
-const DIVISIONS: (Division | 'All')[] = ['All', 'Research', 'Design', 'Opportunity']
+const DIVISIONS: (Division | 'All')[] = ['All', 'Research', 'Design', 'Opportunity', 'VEX U']
 
 const convertMatchIdToName = (matchId: string): string => {
   if (matchId.startsWith('PRACTICE')) {

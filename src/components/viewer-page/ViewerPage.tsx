@@ -33,6 +33,22 @@ const BROADCAST_INFORMATION: Record<string, BroadcastInfo> = {
     division: 'Opportunity',
     day: 2,
   },
+  knie7vj3zz06vgenh9uh: {
+    division: 'Research',
+    day: 3,
+  },
+  t0lb3eqnzxs5fue6cmb0: {
+    division: 'Design',
+    day: 3,
+  },
+  nobkkjkvjsjvbixcbmy1: {
+    division: 'Opportunity',
+    day: 3,
+  },
+  ws7r77j055jn9nbchhxv: {
+    division: 'VEX U',
+    day: 3,
+  },
 }
 
 export const ViewerPage: React.FunctionComponent = () => {
